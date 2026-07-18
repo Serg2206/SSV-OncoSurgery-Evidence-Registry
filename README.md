@@ -1,5 +1,7 @@
 # SSV-OncoSurgery-Evidence-Registry
 
+Language: English | [Русский](README.ru.md) | [Українська](README.uk.md)
+
 Evidence-grade, agent-ready platform for surgical oncology outcomes, protocol intelligence, and reproducible research products.
 
 ## Vision
@@ -62,6 +64,7 @@ SSV-OncoSurgery-Evidence-Registry/
 
   Dockerfile
   docker-compose.yml
+  docker-compose.prod.yml
 
   reports/
     quarterly/
@@ -109,11 +112,13 @@ See `docs/MONETIZATION.md`.
 ## API Surface
 Implemented FastAPI service in `app/main.py` with endpoints:
 - `GET /health`
+- `GET /ready`
 - `GET /api/v1/quality/summary`
 - `GET /api/v1/reports/quarterly/latest`
 - `GET /api/v1/reports/quarterly/{period}`
 - `GET /api/v1/eval/template`
 - `GET /api/v1/dashboard/partner-demo`
+- `GET /api/v1/dashboard/full`
 
 Run locally:
 
@@ -151,6 +156,16 @@ docker compose up --build -d
 
 API base URL:
 - `http://localhost:8000`
+
+Minimal production profile:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+## Partner API Spec
+Swagger-oriented partner API examples for sales and pilots:
+- `docs/openapi.partner.yaml`
 
 ## Gold Metrics
 - Mandatory field completeness >= 95%.

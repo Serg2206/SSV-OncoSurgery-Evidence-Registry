@@ -1,0 +1,111 @@
+openapi: 3.1.0
+info:
+  title: SSV Evidence Partner API
+  version: 0.2.0
+  description: |
+    Swagger-oriented partner API profile with examples for sales demos and pilot launches.
+servers:
+  - url: https://api.ssvnauka.net
+    description: Production placeholder
+  - url: http://localhost:8000
+    description: Local development
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      responses:
+        '200':
+          description: Service is alive
+          content:
+            application/json:
+              example:
+                status: ok
+  /ready:
+    get:
+      summary: Readiness probe
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              example:
+                status: ready
+                checks:
+                  registry_csv: true
+                  eval_template: true
+                  reports_dir: true
+        '503':
+          description: Service not ready
+  /api/v1/dashboard/partner-demo:
+    get:
+      summary: Compact partner pilot dashboard
+      tags: [Partner]
+      responses:
+        '200':
+          description: Compact KPI payload
+          content:
+            application/json:
+              example:
+                program: SSV OncoSurgery Evidence Pilot
+                snapshot:
+                  records_total: 3
+                  los_mean_days: 9.33
+                  severe_complication_rate: 0.3333
+                  readmission_30d_rate: 0.3333
+                  mortality_30d_rate: 0.0
+                reporting:
+                  latest_period: 2026-Q3
+                  latest_report_file: reports/quarterly/2026-Q3.md
+                commercial:
+                  pilot_duration_weeks: 12
+                  starter_pilot_usd: 9000
+                  pro_pilot_usd: 18000
+                  network_pilot_usd_from: 35000
+  /api/v1/dashboard/full:
+    get:
+      summary: Full dashboard with trends and risk strata
+      tags: [Partner, Analytics]
+      responses:
+        '200':
+          description: Full pilot-grade analytics payload
+          content:
+            application/json:
+              example:
+                generated_at: 2026-07-18T18:00:00Z
+                overall:
+                  records_total: 3
+                  los_mean_days: 9.33
+                  severe_complication_rate: 0.3333
+                  readmission_30d_rate: 0.3333
+                  mortality_30d_rate: 0.0
+                trends_by_period:
+                  - period: 2026-Q1
+                    records: 3
+                    los_mean_days: 9.33
+                    severe_complication_rate: 0.3333
+                    readmission_30d_rate: 0.3333
+                    mortality_30d_rate: 0.0
+                risk_stratified:
+                  by_stage:
+                    III:
+                      records: 2
+                      severe_complication_rate: 0.5
+                      mortality_30d_rate: 0.0
+                  by_asa_class:
+                    '4':
+                      records: 1
+                      severe_complication_rate: 1.0
+                      mortality_30d_rate: 0.0
+                  by_tumor_site:
+                    gastric:
+                      records: 2
+                      severe_complication_rate: 0.5
+                      mortality_30d_rate: 0.0
+  /api/v1/quality/summary:
+    get:
+      summary: Quality snapshot
+      tags: [Analytics]
+      responses:
+        '200':
+          description: Quality metrics
+components: {}
