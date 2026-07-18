@@ -1,111 +1,443 @@
-openapi: 3.1.0
-info:
-  title: SSV Evidence Partner API
-  version: 0.2.0
-  description: |
-    Swagger-oriented partner API profile with examples for sales demos and pilot launches.
-servers:
-  - url: https://api.ssvnauka.net
-    description: Production placeholder
-  - url: http://localhost:8000
-    description: Local development
-paths:
-  /health:
-    get:
-      summary: Liveness probe
-      responses:
-        '200':
-          description: Service is alive
-          content:
-            application/json:
-              example:
-                status: ok
-  /ready:
-    get:
-      summary: Readiness probe
-      responses:
-        '200':
-          description: Service is ready
-          content:
-            application/json:
-              example:
-                status: ready
-                checks:
-                  registry_csv: true
-                  eval_template: true
-                  reports_dir: true
-        '503':
-          description: Service not ready
-  /api/v1/dashboard/partner-demo:
-    get:
-      summary: Compact partner pilot dashboard
-      tags: [Partner]
-      responses:
-        '200':
-          description: Compact KPI payload
-          content:
-            application/json:
-              example:
-                program: SSV OncoSurgery Evidence Pilot
-                snapshot:
-                  records_total: 3
-                  los_mean_days: 9.33
-                  severe_complication_rate: 0.3333
-                  readmission_30d_rate: 0.3333
-                  mortality_30d_rate: 0.0
-                reporting:
-                  latest_period: 2026-Q3
-                  latest_report_file: reports/quarterly/2026-Q3.md
-                commercial:
-                  pilot_duration_weeks: 12
-                  starter_pilot_usd: 9000
-                  pro_pilot_usd: 18000
-                  network_pilot_usd_from: 35000
-  /api/v1/dashboard/full:
-    get:
-      summary: Full dashboard with trends and risk strata
-      tags: [Partner, Analytics]
-      responses:
-        '200':
-          description: Full pilot-grade analytics payload
-          content:
-            application/json:
-              example:
-                generated_at: 2026-07-18T18:00:00Z
-                overall:
-                  records_total: 3
-                  los_mean_days: 9.33
-                  severe_complication_rate: 0.3333
-                  readmission_30d_rate: 0.3333
-                  mortality_30d_rate: 0.0
-                trends_by_period:
-                  - period: 2026-Q1
-                    records: 3
-                    los_mean_days: 9.33
-                    severe_complication_rate: 0.3333
-                    readmission_30d_rate: 0.3333
-                    mortality_30d_rate: 0.0
-                risk_stratified:
-                  by_stage:
-                    III:
-                      records: 2
-                      severe_complication_rate: 0.5
-                      mortality_30d_rate: 0.0
-                  by_asa_class:
-                    '4':
-                      records: 1
-                      severe_complication_rate: 1.0
-                      mortality_30d_rate: 0.0
-                  by_tumor_site:
-                    gastric:
-                      records: 2
-                      severe_complication_rate: 0.5
-                      mortality_30d_rate: 0.0
-  /api/v1/quality/summary:
-    get:
-      summary: Quality snapshot
-      tags: [Analytics]
-      responses:
-        '200':
-          description: Quality metrics
-components: {}
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SSV Evidence Registry API",
+    "description": "Quality, reporting, dashboard, and partner-facing endpoints for oncology evidence registry.",
+    "version": "0.3.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Local development"
+    },
+    {
+      "url": "https://api.ssvnauka.net",
+      "description": "Production placeholder"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "summary": "Ready",
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Ready Ready Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quality/summary": {
+      "get": {
+        "summary": "Quality Summary",
+        "operationId": "quality_summary_api_v1_quality_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Quality Summary Api V1 Quality Summary Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/quarterly/latest": {
+      "get": {
+        "summary": "Latest Quarterly Report",
+        "operationId": "latest_quarterly_report_api_v1_reports_quarterly_latest_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Latest Quarterly Report Api V1 Reports Quarterly Latest Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/quarterly/{period}": {
+      "get": {
+        "summary": "Quarterly Report",
+        "operationId": "quarterly_report_api_v1_reports_quarterly__period__get",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Quarterly Report Api V1 Reports Quarterly  Period  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/eval/template": {
+      "get": {
+        "summary": "Eval Template",
+        "operationId": "eval_template_api_v1_eval_template_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Eval Template Api V1 Eval Template Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/partner-demo": {
+      "get": {
+        "summary": "Partner Demo Dashboard",
+        "description": "Compact payload for pilot demos and partner presentations.",
+        "operationId": "partner_demo_dashboard_api_v1_dashboard_partner_demo_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Partner Demo Dashboard Api V1 Dashboard Partner Demo Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/full": {
+      "get": {
+        "summary": "Full Dashboard",
+        "operationId": "full_dashboard_api_v1_dashboard_full_get",
+        "responses": {
+          "200": {
+            "description": "Full dashboard payload for partner pilots and sales demos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Full Dashboard Api V1 Dashboard Full Get"
+                },
+                "example": {
+                  "generated_at": "2026-07-18T18:00:00Z",
+                  "overall": {
+                    "records_total": 3,
+                    "los_mean_days": 9.33,
+                    "severe_complication_rate": 0.3333,
+                    "readmission_30d_rate": 0.3333,
+                    "mortality_30d_rate": 0.0
+                  },
+                  "trends_by_period": [
+                    {
+                      "period": "2026-Q1",
+                      "records": 3,
+                      "los_mean_days": 9.33,
+                      "severe_complication_rate": 0.3333,
+                      "readmission_30d_rate": 0.3333,
+                      "mortality_30d_rate": 0.0
+                    }
+                  ],
+                  "risk_stratified": {
+                    "by_stage": {
+                      "II": {
+                        "records": 1,
+                        "mortality_30d_rate": 0.0,
+                        "severe_complication_rate": 0.0
+                      },
+                      "III": {
+                        "records": 2,
+                        "mortality_30d_rate": 0.0,
+                        "severe_complication_rate": 0.5
+                      }
+                    },
+                    "by_asa_class": {
+                      "2": {
+                        "records": 1,
+                        "mortality_30d_rate": 0.0,
+                        "severe_complication_rate": 0.0
+                      },
+                      "3": {
+                        "records": 1,
+                        "mortality_30d_rate": 0.0,
+                        "severe_complication_rate": 0.0
+                      },
+                      "4": {
+                        "records": 1,
+                        "mortality_30d_rate": 0.0,
+                        "severe_complication_rate": 1.0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/meta/versioning": {
+      "get": {
+        "summary": "Api Versioning",
+        "operationId": "api_versioning_api_v2_meta_versioning_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Api Versioning Api V2 Meta Versioning Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/quality/summary": {
+      "get": {
+        "summary": "Quality Summary V2",
+        "operationId": "quality_summary_v2_api_v2_quality_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Quality Summary V2 Api V2 Quality Summary Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/reports/quarterly/latest": {
+      "get": {
+        "summary": "Latest Quarterly Report V2",
+        "operationId": "latest_quarterly_report_v2_api_v2_reports_quarterly_latest_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Latest Quarterly Report V2 Api V2 Reports Quarterly Latest Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/dashboard/full": {
+      "get": {
+        "summary": "Full Dashboard V2",
+        "operationId": "full_dashboard_v2_api_v2_dashboard_full_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Full Dashboard V2 Api V2 Dashboard Full Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/dashboard/partner-demo": {
+      "get": {
+        "summary": "Partner Demo Dashboard V2",
+        "operationId": "partner_demo_dashboard_v2_api_v2_dashboard_partner_demo_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Partner Demo Dashboard V2 Api V2 Dashboard Partner Demo Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/sales-kpi": {
+      "get": {
+        "summary": "Public Sales Kpi",
+        "operationId": "public_sales_kpi_api_public_sales_kpi_get",
+        "responses": {
+          "200": {
+            "description": "Public KPI payload for sales pages and pilot teasers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Public Sales Kpi Api Public Sales Kpi Get"
+                },
+                "example": {
+                  "program": "SSV OncoSurgery Evidence Pilot",
+                  "generated_at": "2026-07-18T18:00:00Z",
+                  "kpi": {
+                    "records_total": 3,
+                    "los_mean_days": 9.33,
+                    "severe_complication_rate": 0.3333,
+                    "readmission_30d_rate": 0.3333,
+                    "mortality_30d_rate": 0.0
+                  },
+                  "commercial": {
+                    "pilot_duration_weeks": 12,
+                    "starter_pilot_usd": 9000,
+                    "pro_pilot_usd": 18000,
+                    "network_pilot_usd_from": 35000
+                  },
+                  "compliance_note": "Public payload with aggregate KPIs only. No row-level data exposed."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

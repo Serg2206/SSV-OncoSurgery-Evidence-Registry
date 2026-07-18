@@ -8,7 +8,7 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 
 ROOT = Path(__file__).resolve().parent.parent
 REGISTRY_CSV = ROOT / "patient_outcomes_template.csv"
@@ -21,8 +21,20 @@ app = FastAPI(
         "Quality, reporting, dashboard, and partner-facing endpoints "
         "for oncology evidence registry."
     ),
-    version="0.2.0",
+    version="0.3.0",
+    servers=[
+        {"url": "http://localhost:8000", "description": "Local development"},
+        {"url": "https://api.ssvnauka.net", "description": "Production placeholder"},
+    ],
 )
+
+API_V1_DEPRECATION_NOTICE = {
+    "version": "v1",
+    "status": "deprecated",
+    "replacement": "v2",
+    "policy": "v1 receives only critical fixes; migrate integrations to /api/v2 endpoints.",
+    "sunset_target": "2027-01-31",
+}
 
 
 FULL_DASHBOARD_EXAMPLE = {
@@ -77,9 +89,34 @@ FULL_DASHBOARD_EXAMPLE = {
     },
 }
 
+PUBLIC_SALES_KPI_EXAMPLE = {
+    "program": "SSV OncoSurgery Evidence Pilot",
+    "generated_at": "2026-07-18T18:00:00Z",
+    "kpi": {
+        "records_total": 3,
+        "los_mean_days": 9.33,
+        "severe_complication_rate": 0.3333,
+        "readmission_30d_rate": 0.3333,
+        "mortality_30d_rate": 0.0,
+    },
+    "commercial": {
+        "pilot_duration_weeks": 12,
+        "starter_pilot_usd": 9000,
+        "pro_pilot_usd": 18000,
+        "network_pilot_usd_from": 35000,
+    },
+    "compliance_note": "Public payload with aggregate KPIs only. No row-level data exposed.",
+}
+
 
 def _to_bool(raw: str) -> bool:
     return str(raw).strip().lower() in {"true", "1", "yes", "y"}
+
+
+def _mark_v1_deprecated(response: Response) -> None:
+    response.headers["Deprecation"] = "true"
+    response.headers["Sunset"] = API_V1_DEPRECATION_NOTICE["sunset_target"]
+    response.headers["Link"] = '</api/v2/meta/versioning>; rel="successor-version"'
 
 
 def _rate(num: int, den: int) -> float:
@@ -204,7 +241,8 @@ def ready() -> dict[str, Any]:
 
 
 @app.get("/api/v1/quality/summary")
-def quality_summary() -> dict[str, Any]:
+def quality_summary(response: Response) -> dict[str, Any]:
+    _mark_v1_deprecated(response)
     rows = _load_rows()
     if not rows:
         raise HTTPException(status_code=400, detail="Registry has no rows")
@@ -238,7 +276,8 @@ def quality_summary() -> dict[str, Any]:
 
 
 @app.get("/api/v1/reports/quarterly/latest")
-def latest_quarterly_report() -> dict[str, Any]:
+def latest_quarterly_report(response: Response) -> dict[str, Any]:
+    _mark_v1_deprecated(response)
     if not REPORTS_DIR.exists():
         raise HTTPException(status_code=404, detail="Quarterly reports directory does not exist")
 
@@ -255,7 +294,8 @@ def latest_quarterly_report() -> dict[str, Any]:
 
 
 @app.get("/api/v1/reports/quarterly/{period}")
-def quarterly_report(period: str) -> dict[str, Any]:
+def quarterly_report(period: str, response: Response) -> dict[str, Any]:
+    _mark_v1_deprecated(response)
     file_path = REPORTS_DIR / f"{period}.md"
     if not file_path.exists():
         raise HTTPException(status_code=404, detail=f"Report not found for period: {period}")
@@ -268,7 +308,8 @@ def quarterly_report(period: str) -> dict[str, Any]:
 
 
 @app.get("/api/v1/eval/template")
-def eval_template() -> dict[str, Any]:
+def eval_template(response: Response) -> dict[str, Any]:
+    _mark_v1_deprecated(response)
     if not EVAL_TEMPLATE.exists():
         raise HTTPException(status_code=404, detail="Model evaluation template not found")
 
@@ -276,10 +317,11 @@ def eval_template() -> dict[str, Any]:
 
 
 @app.get("/api/v1/dashboard/partner-demo")
-def partner_demo_dashboard() -> dict[str, Any]:
+def partner_demo_dashboard(response: Response) -> dict[str, Any]:
     """Compact payload for pilot demos and partner presentations."""
-    quality = quality_summary()
-    latest_report = latest_quarterly_report()
+    _mark_v1_deprecated(response)
+    quality = _quality_summary_core()
+    latest_report = _latest_quarterly_report_core()
 
     return {
         "program": "SSV OncoSurgery Evidence Pilot",
@@ -341,4 +383,152 @@ def full_dashboard() -> dict[str, Any]:
         },
         "trends_by_period": trends,
         "risk_stratified": risk_stratified,
+    }
+
+
+def _quality_summary_core() -> dict[str, Any]:
+    rows = _load_rows()
+    if not rows:
+        raise HTTPException(status_code=400, detail="Registry has no rows")
+
+    los = [float(r["los_days"]) for r in rows if r.get("los_days")]
+    complication = [int(r["complication_clavien_max"]) for r in rows if r.get("complication_clavien_max")]
+
+    readmission_count = sum(_to_bool(r.get("readmission_30d", "")) for r in rows)
+    reoperation_count = sum(_to_bool(r.get("reoperation_30d", "")) for r in rows)
+    mortality_count = sum(_to_bool(r.get("mortality_30d", "")) for r in rows)
+    icu_count = sum(_to_bool(r.get("icu_admission", "")) for r in rows)
+    severe_complication_count = sum(1 for value in complication if value >= 3)
+
+    by_tumor_site: dict[str, int] = {}
+    for row in rows:
+        tumor_site = row.get("tumor_site", "unknown")
+        by_tumor_site[tumor_site] = by_tumor_site.get(tumor_site, 0) + 1
+
+    total = len(rows)
+    return {
+        "records_total": total,
+        "los_mean_days": round(mean(los), 2) if los else None,
+        "complication_clavien_mean": round(mean(complication), 2) if complication else None,
+        "readmission_30d_rate": round(readmission_count / total, 4),
+        "reoperation_30d_rate": round(reoperation_count / total, 4),
+        "mortality_30d_rate": round(mortality_count / total, 4),
+        "icu_admission_rate": round(icu_count / total, 4),
+        "severe_complication_rate": round(severe_complication_count / total, 4),
+        "by_tumor_site": by_tumor_site,
+    }
+
+
+def _latest_quarterly_report_core() -> dict[str, Any]:
+    if not REPORTS_DIR.exists():
+        raise HTTPException(status_code=404, detail="Quarterly reports directory does not exist")
+
+    candidates = sorted(REPORTS_DIR.glob("*.md"))
+    if not candidates:
+        raise HTTPException(status_code=404, detail="No quarterly reports found")
+
+    latest = candidates[-1]
+    return {
+        "period": latest.stem,
+        "file": str(latest.relative_to(ROOT)).replace("\\", "/"),
+        "content": latest.read_text(encoding="utf-8"),
+    }
+
+
+@app.get("/api/v2/meta/versioning")
+def api_versioning() -> dict[str, Any]:
+    return {
+        "active": "v2",
+        "supported": ["v1", "v2"],
+        "v1": API_V1_DEPRECATION_NOTICE,
+        "v2": {
+            "status": "active",
+            "policy": "v2 is the default integration target for new partner and pilot clients.",
+        },
+    }
+
+
+@app.get("/api/v2/quality/summary")
+def quality_summary_v2() -> dict[str, Any]:
+    result = _quality_summary_core()
+    result["api_version"] = "v2"
+    return result
+
+
+@app.get("/api/v2/reports/quarterly/latest")
+def latest_quarterly_report_v2() -> dict[str, Any]:
+    result = _latest_quarterly_report_core()
+    result["api_version"] = "v2"
+    return result
+
+
+@app.get("/api/v2/dashboard/full")
+def full_dashboard_v2() -> dict[str, Any]:
+    payload = full_dashboard()
+    payload["api_version"] = "v2"
+    payload["deprecation"] = {"v1": API_V1_DEPRECATION_NOTICE}
+    return payload
+
+
+@app.get("/api/v2/dashboard/partner-demo")
+def partner_demo_dashboard_v2() -> dict[str, Any]:
+    quality = _quality_summary_core()
+    latest_report = _latest_quarterly_report_core()
+
+    return {
+        "api_version": "v2",
+        "program": "SSV OncoSurgery Evidence Pilot",
+        "snapshot": {
+            "records_total": quality["records_total"],
+            "los_mean_days": quality["los_mean_days"],
+            "severe_complication_rate": quality["severe_complication_rate"],
+            "readmission_30d_rate": quality["readmission_30d_rate"],
+            "mortality_30d_rate": quality["mortality_30d_rate"],
+        },
+        "reporting": {
+            "latest_period": latest_report["period"],
+            "latest_report_file": latest_report["file"],
+        },
+        "commercial": {
+            "pilot_duration_weeks": 12,
+            "starter_pilot_usd": 9000,
+            "pro_pilot_usd": 18000,
+            "network_pilot_usd_from": 35000,
+        },
+        "next_actions": [
+            "Expand cohort to 30-50 records",
+            "Enable risk-adjusted stratification",
+            "Finalize partner pilot kickoff package",
+        ],
+    }
+
+
+@app.get(
+    "/api/public/sales-kpi",
+    responses={
+        200: {
+            "description": "Public KPI payload for sales pages and pilot teasers.",
+            "content": {"application/json": {"example": PUBLIC_SALES_KPI_EXAMPLE}},
+        }
+    },
+)
+def public_sales_kpi() -> dict[str, Any]:
+    quality = _quality_summary_core()
+    return {
+        "program": "SSV OncoSurgery Evidence Pilot",
+        "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "kpi": {
+            "records_total": quality["records_total"],
+            "los_mean_days": quality["los_mean_days"],
+            "severe_complication_rate": quality["severe_complication_rate"],
+            "readmission_30d_rate": quality["readmission_30d_rate"],
+            "mortality_30d_rate": quality["mortality_30d_rate"],
+        },
+        "commercial": {
+            "pilot_duration_weeks": 12,
+            "starter_pilot_usd": 9000,
+            "pro_pilot_usd": 18000,
+            "network_pilot_usd_from": 35000,
+        },
+        "compliance_note": "Public payload with aggregate KPIs only. No row-level data exposed.",
     }

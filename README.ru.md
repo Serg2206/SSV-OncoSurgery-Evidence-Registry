@@ -24,12 +24,15 @@ docker compose up --build -d
 ## Ключевые endpoint
 - GET /health
 - GET /ready
-- GET /api/v1/quality/summary
-- GET /api/v1/dashboard/partner-demo
-- GET /api/v1/dashboard/full
-- GET /api/v1/reports/quarterly/latest
+- GET /api/v2/meta/versioning
+- GET /api/v2/quality/summary
+- GET /api/v2/dashboard/partner-demo
+- GET /api/v2/dashboard/full
+- GET /api/v2/reports/quarterly/latest
+- GET /api/public/sales-kpi
 
 ## Документы
 - Partner one-pager: docs/PARTNER_PILOT_ONE_PAGER.md
 - Pilot landing: docs/PILOT_LANDING.md
 - Partner OpenAPI spec: docs/openapi.partner.yaml
+- API versioning policy: docs/API_VERSIONING.md

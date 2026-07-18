@@ -113,12 +113,13 @@ See `docs/MONETIZATION.md`.
 Implemented FastAPI service in `app/main.py` with endpoints:
 - `GET /health`
 - `GET /ready`
-- `GET /api/v1/quality/summary`
-- `GET /api/v1/reports/quarterly/latest`
-- `GET /api/v1/reports/quarterly/{period}`
-- `GET /api/v1/eval/template`
-- `GET /api/v1/dashboard/partner-demo`
-- `GET /api/v1/dashboard/full`
+- `GET /api/v1/*` (deprecated, migration headers enabled)
+- `GET /api/v2/meta/versioning`
+- `GET /api/v2/quality/summary`
+- `GET /api/v2/reports/quarterly/latest`
+- `GET /api/v2/dashboard/partner-demo`
+- `GET /api/v2/dashboard/full`
+- `GET /api/public/sales-kpi` (aggregate-only public payload)
 
 Run locally:
 
@@ -166,6 +167,15 @@ docker compose -f docker-compose.prod.yml up -d
 ## Partner API Spec
 Swagger-oriented partner API examples for sales and pilots:
 - `docs/openapi.partner.yaml`
+
+Generated from FastAPI source via:
+- `scripts/export_openapi.py`
+
+CI regenerates and validates this file to prevent drift.
+
+## API Versioning Policy
+Versioning and deprecation details are documented in:
+- `docs/API_VERSIONING.md`
 
 ## Gold Metrics
 - Mandatory field completeness >= 95%.
