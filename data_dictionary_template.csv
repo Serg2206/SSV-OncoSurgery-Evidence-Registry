@@ -1,0 +1,27 @@
+field_name,domain,data_type,allowed_values,required,description,clinical_rationale,source_system,unit,example
+record_id,meta,string,UUID,yes,Unique row identifier,Traceability and audit,registry,,a7a734f8-26f5-4ca1-b9d8-b86862d87f53
+patient_pseudo_id,meta,string,hash value,yes,De-identified patient key,Longitudinal linkage without PHI,registry,,pt_49f03c
+encounter_date,meta,date,YYYY-MM-DD,yes,Date of index clinical encounter,Defines episode timeline,EHR,,2026-04-12
+age_years,baseline,integer,0-120,yes,Age at treatment,Risk adjustment and stratification,EHR,years,62
+sex_at_birth,baseline,category,male|female|intersex|unknown,yes,Sex assigned at birth,Outcome stratification,EHR,,male
+asa_class,baseline,integer,1-5,yes,ASA physical status,Perioperative risk adjustment,anesthesia,,3
+tumor_site,disease,category,gastric|colorectal|esophageal|other,yes,Primary tumor location,Cohort definition,pathology,,gastric
+clinical_stage,disease,category,I|II|III|IV|unknown,yes,Pre-treatment stage,Prognosis and treatment planning,oncology,,III
+procedure_type,treatment,category,open|laparoscopic|robotic|hybrid,yes,Surgical approach,Comparative effectiveness,OR log,,robotic
+resection_margin,treatment,category,R0|R1|R2|unknown,yes,Margin status,Oncologic adequacy,pathology,,R0
+op_duration_min,intraop,integer,0-1440,yes,Operation duration,Complexity and resource use,OR log,minutes,210
+blood_loss_ml,intraop,integer,0-10000,no,Estimated blood loss,Complication predictor,OR log,mL,350
+icu_admission,postop,boolean,true|false,yes,ICU required post-op,Severity and resource use,EHR,,false
+los_days,postop,number,0-365,yes,Length of stay,Efficiency and recovery,EHR,days,9
+complication_clavien_max,postop,integer,0-5,yes,Highest Clavien-Dindo grade,Safety endpoint,clinical review,,2
+anastomotic_leak,postop,boolean,true|false,no,Detected leak event,Major morbidity marker,clinical review,,false
+readmission_30d,followup,boolean,true|false,yes,Readmission within 30 days,Early failure indicator,EHR,,false
+reoperation_30d,followup,boolean,true|false,yes,Reoperation within 30 days,Surgical quality indicator,EHR,,false
+mortality_30d,followup,boolean,true|false,yes,Death within 30 days,Core safety endpoint,EHR,,false
+os_12m_status,followup,category,alive|dead|unknown,no,Overall survival at 12 months,Oncologic endpoint,follow-up,,alive
+pfs_12m_status,followup,category,progression_free|progressed|unknown,no,Progression-free status at 12 months,Disease control endpoint,follow-up,,progression_free
+adjuvant_therapy,treatment,category,none|chemo|radio|chemoradio|targeted|immuno,yes,Post-op adjunct treatment,Confounder for outcomes,oncology,,chemo
+smoking_status,baseline,category,never|former|current|unknown,no,Smoking exposure,Risk model input,history,,former
+bmi,baseline,number,10-80,no,Body mass index,Risk adjustment,EHR,kg_per_m2,27.4
+comorbidity_index,baseline,integer,0-20,no,Comorbidity burden,Case-mix severity,clinical review,,4
+study_cohort_tag,meta,string,free text,yes,Cohort label for analysis,Versioned cohort reproducibility,registry,,gastric_q3_2026
