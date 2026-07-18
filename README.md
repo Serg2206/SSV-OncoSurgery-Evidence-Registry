@@ -52,8 +52,17 @@ SSV-OncoSurgery-Evidence-Registry/
       publication_system_prompt.md
 
   analytics/
+    scripts/
+      build_quarterly_report.py
     eval/
       model_eval_report.template.json
+
+  app/
+    main.py
+
+  reports/
+    quarterly/
+      2026-Q3.md
 
   governance/
     deidentification-standard.md
@@ -94,6 +103,38 @@ See `docs/INTEROPERABILITY_FHIR_OMOP.md`.
 
 See `docs/MONETIZATION.md`.
 
+## API Surface
+Implemented FastAPI service in `app/main.py` with endpoints:
+- `GET /health`
+- `GET /api/v1/quality/summary`
+- `GET /api/v1/reports/quarterly/latest`
+- `GET /api/v1/reports/quarterly/{period}`
+- `GET /api/v1/eval/template`
+
+Run locally:
+
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+## Quarterly Demo Report
+First demo artifact generated and committed:
+- `reports/quarterly/2026-Q3.md`
+
+Scripted generator:
+- `analytics/scripts/build_quarterly_report.py`
+
+Example command:
+
+```bash
+python analytics/scripts/build_quarterly_report.py --period 2026-Q3 --output reports/quarterly/2026-Q3.md
+```
+
+## Partner Pilot Pack
+Partner-facing one-pager with pilot scope, pricing, and SLA draft:
+- `docs/PARTNER_PILOT_ONE_PAGER.md`
+
 ## Gold Metrics
 - Mandatory field completeness >= 95%.
 - Follow-up capture >= 80% at target interval.
@@ -103,5 +144,5 @@ See `docs/MONETIZATION.md`.
 ## Immediate Next Steps
 1. Add first 20-50 retrospective de-identified records.
 2. Freeze `v1` schema and mapping assumptions.
-3. Generate first quarterly mock report from sample data.
-4. Start building API + dashboard surface for partner pilots.
+3. Add risk-adjusted analysis endpoint and dashboard UI.
+4. Launch first partner pilot using one-pager scope and SLA model.
