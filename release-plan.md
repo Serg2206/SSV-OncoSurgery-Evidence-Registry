@@ -40,10 +40,33 @@ Done when:
 - Validation memo approved.
 - Publication pipeline checklist completed.
 
+## R5 (Weeks 15-18): Agentization and Platform API
+- Add agent configuration baseline and role prompts.
+- Implement API contracts for quality reports and analytics jobs.
+- Add observability baseline (traces, job logs, report lineage).
+
+Done when:
+- Agent pipeline runs end-to-end on a tagged sample snapshot.
+- API can return last quality report and last quarterly report metadata.
+
+## R6 (Weeks 19-24): Productization and Monetization Readiness
+- Create Starter/Pro/Enterprise packaging definitions.
+- Prepare partner pilot playbook and onboarding checklist.
+- Publish pricing assumptions and value metric framework.
+
+Done when:
+- One pilot-ready deployment profile is documented.
+- One partner-facing evidence package template is finalized.
+
 ## Ongoing Cadence
 - Weekly: QA huddle and issue triage.
 - Monthly: protocol drift review and update.
 - Quarterly: evidence report release and archive snapshot.
+
+## Go-To-Market Cadence
+- Monthly: showcase one measurable clinical insight artifact.
+- Quarterly: release one public methods/evidence note.
+- Biannual: partner pilot review and commercialization iteration.
 
 ## Risk Controls
 - Keep raw and curated datasets strictly separated.

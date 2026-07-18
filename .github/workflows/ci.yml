@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  validate-registry-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate CSV templates exist
+        run: |
+          test -f data_dictionary_template.csv
+          test -f patient_outcomes_template.csv
+
+      - name: Basic CSV shape checks
+        run: |
+          python - << 'PY'
+          import csv
+
+          required_data_dict_cols = {
+              "field_name","domain","data_type","allowed_values","required",
+              "description","clinical_rationale","source_system","unit","example"
+          }
+          with open('data_dictionary_template.csv', newline='', encoding='utf-8') as f:
+              reader = csv.DictReader(f)
+              cols = set(reader.fieldnames or [])
+              missing = required_data_dict_cols - cols
+              if missing:
+                  raise SystemExit(f"Missing columns in data_dictionary_template.csv: {sorted(missing)}")
+
+          with open('patient_outcomes_template.csv', newline='', encoding='utf-8') as f:
+              reader = csv.DictReader(f)
+              rows = list(reader)
+              if len(rows) < 1:
+                  raise SystemExit('patient_outcomes_template.csv must contain at least one sample row')
+
+          print('CSV templates validated successfully')
+          PY

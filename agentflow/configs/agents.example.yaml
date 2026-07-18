@@ -1,0 +1,42 @@
+version: 1
+name: ssv-evidence-agentflow
+
+agents:
+  intake:
+    role: IntakeAgent
+    goal: Validate incoming records against schema and required fields.
+    tools: [csv_validator]
+  qa:
+    role: QAAgent
+    goal: Detect missingness, range violations, and consistency conflicts.
+    tools: [dq_checks, stats]
+  protocol:
+    role: ProtocolAgent
+    goal: Detect pathway drift and protocol deviations.
+    tools: [protocol_diff]
+  analytics:
+    role: AnalyticsAgent
+    goal: Produce reproducible KPI and risk-adjusted outcome analyses.
+    tools: [survival_analysis, risk_model]
+  publication:
+    role: PublicationAgent
+    goal: Produce manuscript-ready markdown and report sections.
+    tools: [report_builder]
+  governance:
+    role: GovernanceAgent
+    goal: Enforce de-identification and export-policy checks.
+    tools: [policy_guard]
+
+workflow:
+  type: sequential_with_gates
+  steps:
+    - intake
+    - qa
+    - protocol
+    - analytics
+    - publication
+    - governance
+  approvals:
+    - clinical_reviewer
+    - principal_investigator
+    - compliance_officer

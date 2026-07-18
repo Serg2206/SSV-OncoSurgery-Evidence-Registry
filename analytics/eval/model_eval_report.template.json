@@ -1,0 +1,30 @@
+{
+  "model_name": "",
+  "model_version": "",
+  "evaluation_date": "",
+  "dataset_snapshot_tag": "",
+  "tasks": [
+    {
+      "name": "risk_stratification",
+      "metrics": {
+        "auroc": 0.0,
+        "auprc": 0.0,
+        "calibration_error": 0.0
+      }
+    },
+    {
+      "name": "complication_prediction",
+      "metrics": {
+        "sensitivity": 0.0,
+        "specificity": 0.0,
+        "f1": 0.0
+      }
+    }
+  ],
+  "bias_checks": {
+    "by_stage": "pending",
+    "by_age_group": "pending",
+    "by_sex": "pending"
+  },
+  "notes": ""
+}
