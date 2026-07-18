@@ -106,3 +106,36 @@ def eval_template() -> dict[str, Any]:
         raise HTTPException(status_code=404, detail="Model evaluation template not found")
 
     return json.loads(EVAL_TEMPLATE.read_text(encoding="utf-8"))
+
+
+@app.get("/api/v1/dashboard/partner-demo")
+def partner_demo_dashboard() -> dict[str, Any]:
+    """Compact payload for pilot demos and partner presentations."""
+    quality = quality_summary()
+    latest_report = latest_quarterly_report()
+
+    return {
+        "program": "SSV OncoSurgery Evidence Pilot",
+        "snapshot": {
+            "records_total": quality["records_total"],
+            "los_mean_days": quality["los_mean_days"],
+            "severe_complication_rate": quality["severe_complication_rate"],
+            "readmission_30d_rate": quality["readmission_30d_rate"],
+            "mortality_30d_rate": quality["mortality_30d_rate"],
+        },
+        "reporting": {
+            "latest_period": latest_report["period"],
+            "latest_report_file": latest_report["file"],
+        },
+        "commercial": {
+            "pilot_duration_weeks": 12,
+            "starter_pilot_usd": 9000,
+            "pro_pilot_usd": 18000,
+            "network_pilot_usd_from": 35000,
+        },
+        "next_actions": [
+            "Expand cohort to 30-50 records",
+            "Enable risk-adjusted stratification",
+            "Finalize partner pilot kickoff package",
+        ],
+    }

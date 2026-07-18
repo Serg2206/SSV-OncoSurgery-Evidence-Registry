@@ -60,6 +60,9 @@ SSV-OncoSurgery-Evidence-Registry/
   app/
     main.py
 
+  Dockerfile
+  docker-compose.yml
+
   reports/
     quarterly/
       2026-Q3.md
@@ -110,6 +113,7 @@ Implemented FastAPI service in `app/main.py` with endpoints:
 - `GET /api/v1/reports/quarterly/latest`
 - `GET /api/v1/reports/quarterly/{period}`
 - `GET /api/v1/eval/template`
+- `GET /api/v1/dashboard/partner-demo`
 
 Run locally:
 
@@ -134,6 +138,19 @@ python analytics/scripts/build_quarterly_report.py --period 2026-Q3 --output rep
 ## Partner Pilot Pack
 Partner-facing one-pager with pilot scope, pricing, and SLA draft:
 - `docs/PARTNER_PILOT_ONE_PAGER.md`
+
+Short pilot landing document:
+- `docs/PILOT_LANDING.md`
+
+## Containerized Deployment
+Run the API with Docker Compose:
+
+```bash
+docker compose up --build -d
+```
+
+API base URL:
+- `http://localhost:8000`
 
 ## Gold Metrics
 - Mandatory field completeness >= 95%.
