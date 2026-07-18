@@ -1,0 +1,111 @@
+{
+  "info": {
+    "name": "SSV Evidence Partner API",
+    "description": "Partner and pilot endpoints for demos, sales, and integration checks.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Ready",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/ready",
+          "host": ["{{baseUrl}}"],
+          "path": ["ready"]
+        }
+      }
+    },
+    {
+      "name": "V2 Versioning",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v2/meta/versioning",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v2", "meta", "versioning"]
+        }
+      }
+    },
+    {
+      "name": "V2 Quality Summary",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v2/quality/summary",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v2", "quality", "summary"]
+        }
+      }
+    },
+    {
+      "name": "V2 Full Dashboard",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v2/dashboard/full",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v2", "dashboard", "full"]
+        }
+      }
+    },
+    {
+      "name": "V2 Partner Demo Dashboard",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v2/dashboard/partner-demo",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v2", "dashboard", "partner-demo"]
+        }
+      }
+    },
+    {
+      "name": "Public Sales KPI",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/public/sales-kpi",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "public", "sales-kpi"]
+        }
+      }
+    },
+    {
+      "name": "V1 Quality Summary (Deprecated)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/quality/summary",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "quality", "summary"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    }
+  ]
+}

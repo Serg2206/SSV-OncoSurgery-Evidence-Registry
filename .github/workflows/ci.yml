@@ -60,3 +60,11 @@ jobs:
       - name: Ensure OpenAPI spec is up to date
         run: |
           git diff --exit-code docs/openapi.partner.yaml
+
+      - name: Verify v1 backward-compatible contracts
+        run: |
+          python scripts/verify_v1_contracts.py
+
+      - name: Smoke-test key API endpoints
+        run: |
+          python scripts/smoke_test_api.py

@@ -168,6 +168,9 @@ docker compose -f docker-compose.prod.yml up -d
 Swagger-oriented partner API examples for sales and pilots:
 - `docs/openapi.partner.yaml`
 
+Postman collection for sales/pilot demos:
+- `docs/postman/SSV-Evidence-Partner.postman_collection.json`
+
 Generated from FastAPI source via:
 - `scripts/export_openapi.py`
 
@@ -176,6 +179,15 @@ CI regenerates and validates this file to prevent drift.
 ## API Versioning Policy
 Versioning and deprecation details are documented in:
 - `docs/API_VERSIONING.md`
+
+Backward-compatible v1 contract snapshots:
+- `contracts/v1/*.contract.json`
+
+Validation scripts:
+- `scripts/verify_v1_contracts.py`
+- `scripts/smoke_test_api.py`
+
+These checks run automatically in CI.
 
 ## Gold Metrics
 - Mandatory field completeness >= 95%.

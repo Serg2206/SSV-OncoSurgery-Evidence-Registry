@@ -359,7 +359,12 @@ def partner_demo_dashboard(response: Response) -> dict[str, Any]:
         }
     },
 )
-def full_dashboard() -> dict[str, Any]:
+def full_dashboard(response: Response) -> dict[str, Any]:
+    _mark_v1_deprecated(response)
+    return _full_dashboard_core()
+
+
+def _full_dashboard_core() -> dict[str, Any]:
     rows = _load_rows()
     if not rows:
         raise HTTPException(status_code=400, detail="Registry has no rows")
@@ -464,7 +469,7 @@ def latest_quarterly_report_v2() -> dict[str, Any]:
 
 @app.get("/api/v2/dashboard/full")
 def full_dashboard_v2() -> dict[str, Any]:
-    payload = full_dashboard()
+    payload = _full_dashboard_core()
     payload["api_version"] = "v2"
     payload["deprecation"] = {"v1": API_V1_DEPRECATION_NOTICE}
     return payload

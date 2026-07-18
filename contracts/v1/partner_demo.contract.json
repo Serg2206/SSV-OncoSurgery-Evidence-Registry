@@ -1,0 +1,21 @@
+{
+  "endpoint": "/api/v1/dashboard/partner-demo",
+  "required_headers": {
+    "Deprecation": "true",
+    "Sunset": "2027-01-31"
+  },
+  "required_fields": {
+    "program": "str",
+    "snapshot": "dict",
+    "reporting": "dict",
+    "commercial": "dict",
+    "next_actions": "list"
+  },
+  "snapshot_required_fields": {
+    "records_total": "int",
+    "los_mean_days": "number_or_null",
+    "severe_complication_rate": "float",
+    "readmission_30d_rate": "float",
+    "mortality_30d_rate": "float"
+  }
+}
