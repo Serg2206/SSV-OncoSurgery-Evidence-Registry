@@ -1,5 +1,7 @@
 # SSV-OncoSurgery-Evidence-Registry
 
+[![CI](https://github.com/Serg2206/SSV-OncoSurgery-Evidence-Registry/actions/workflows/ci.yml/badge.svg)](https://github.com/Serg2206/SSV-OncoSurgery-Evidence-Registry/actions/workflows/ci.yml) ![FHIR](https://img.shields.io/badge/HL7-FHIR-orange)
+
 Language: English | [Русский](README.ru.md) | [Українська](README.uk.md)
 
 Evidence-grade, agent-ready platform for surgical oncology outcomes, protocol intelligence, and reproducible research products.
